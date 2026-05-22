@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f2ea">
+  <title>金多賢</title>
+  <style>
+    :root {
+      --paper: #f7f2ea;
+      --paper-deep: #eee5d7;
+      --panel: rgba(255, 252, 246, 0.92);
+      --panel-solid: #fffaf2;
+      --ink: #2f2a24;
+      --muted: #7a7167;
+      --line: rgba(74, 63, 51, 0.12);
+      --accent: #b77d55;
+      --accent-deep: #8f5e3f;
+      --sage: #87906f;
+      --rose: #d6a29a;
+      --shadow: 0 24px 70px rgba(58, 45, 34, 0.14);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 5%, rgba(255, 250, 241, 0.98), transparent 34rem),
+        linear-gradient(135deg, #f7f2ea 0%, #efe7dc 48%, #f9f4ed 100%);
+      letter-spacing: 0;
+      overflow: hidden;
+    }
+
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      height: min(860px, calc(100dvh - 32px));
+      margin: 16px auto;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .profile,
+    .chat {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+    }
+
+    .profile {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .avatar {
+      width: 68px;
+      height: 68px;
+      flex: 0 0 auto;
+      border-radius: 24px;
+      display: grid;
+      place-items: center;
+      color: #fffaf4;
+      background:
+        linear-gradient(145deg, rgba(183, 125, 85, 0.96), rgba(135, 144, 111, 0.92)),
+        #b77d55;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), 0 16px 30px rgba(143, 94, 63, 0.22);
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    h1,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 28px;
+      line-height: 1.1;
+      font-weight: 760;
+    }
+
+    .status {
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #7f9b69;
+      box-shadow: 0 0 0 6px rgba(127, 155, 105, 0.14);
+    }
+
+    .note {
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.5);
+      color: #5b5148;
+      line-height: 1.8;
+      font-size: 15px;
+      border: 1px solid rgba(74, 63, 51, 0.08);
+    }
+
+    .traits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .trait {
+      padding: 10px 12px;
+      border-radius: 999px;
+      color: #544b43;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(74, 63, 51, 0.09);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .moments {
+      margin-top: auto;
+      display: grid;
+      gap: 12px;
+    }
+
+    .moment {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: rgba(247, 242, 234, 0.72);
+      border: 1px solid rgba(74, 63, 51, 0.08);
+    }
+
+    .moment strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .moment span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .chat {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+
+    .chat-head {
+      min-height: 84px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 250, 242, 0.72);
+    }
+
+    .chat-title {
+      display: grid;
+      gap: 5px;
+    }
+
+    .chat-title strong {
+      font-size: 17px;
+    }
+
+    .chat-title span,
+    .clock {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .clock {
+      padding: 10px 13px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(74, 63, 51, 0.08);
+      white-space: nowrap;
+    }
+
+    .messages {
+      padding: 28px 24px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+      background:
+        linear-gradient(180deg, rgba(255, 252, 246, 0.2), rgba(255, 252, 246, 0)),
+        transparent;
+    }
+
+    .messages::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .messages::-webkit-scrollbar-thumb {
+      border: 3px solid transparent;
+      border-radius: 999px;
+      background: rgba(91, 81, 72, 0.24);
+      background-clip: padding-box;
+    }
+
+    .message-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      margin: 0 0 18px;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .mini-avatar {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: #fffaf4;
+      background: linear-gradient(145deg, var(--accent), var(--sage));
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .bubble-wrap {
+      max-width: min(620px, 78%);
+      display: grid;
+      gap: 6px;
+    }
+
+    .message-row.user .bubble-wrap {
+      justify-items: end;
+    }
+
+    .bubble {
+      padding: 15px 17px;
+      border-radius: 22px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.72;
+      font-size: 15.5px;
+      box-shadow: 0 10px 24px rgba(58, 45, 34, 0.08);
+    }
+
+    .assistant .bubble {
+      color: #3d362f;
+      background: #fffaf2;
+      border-bottom-left-radius: 8px;
+      border: 1px solid rgba(74, 63, 51, 0.08);
+    }
+
+    .user .bubble {
+      color: #fffaf5;
+      background: linear-gradient(145deg, var(--accent-deep), var(--accent));
+      border-bottom-right-radius: 8px;
+    }
+
+    .meta {
+      color: rgba(122, 113, 103, 0.86);
+      font-size: 12px;
+      padding: 0 4px;
+    }
+
+    .composer {
+      padding: 16px;
+      border-top: 1px solid var(--line);
+      background: rgba(255, 250, 242, 0.8);
+    }
+
+    .composer-inner {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+      padding: 10px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(74, 63, 51, 0.1);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .icon-button,
+    .send-button {
+      width: 46px;
+      height: 46px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      background: var(--paper-deep);
+      transition: transform 160ms ease, background 160ms ease, color 160ms ease, opacity 160ms ease;
+    }
+
+    .icon-button:hover,
+    .send-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .icon-button[aria-pressed="true"] {
+      color: #fffaf4;
+      background: var(--rose);
+      animation: breathe 1.3s ease-in-out infinite;
+    }
+
+    .send-button {
+      color: #fffaf4;
+      background: var(--ink);
+    }
+
+    .send-button:disabled,
+    .icon-button:disabled {
+      cursor: default;
+      opacity: 0.45;
+      transform: none;
+    }
+
+    textarea {
+      min-height: 46px;
+      max-height: 150px;
+      width: 100%;
+      padding: 11px 4px;
+      border: 0;
+      resize: none;
+      outline: none;
+      color: var(--ink);
+      background: transparent;
+      line-height: 1.55;
+      font-size: 16px;
+    }
+
+    textarea::placeholder {
+      color: rgba(122, 113, 103, 0.7);
+    }
+
+    .typing {
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+      padding: 2px 0;
+    }
+
+    .typing span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(122, 113, 103, 0.55);
+      animation: dot 1s ease-in-out infinite;
+    }
+
+    .typing span:nth-child(2) {
+      animation-delay: 0.16s;
+    }
+
+    .typing span:nth-child(3) {
+      animation-delay: 0.32s;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @keyframes dot {
+      0%,
+      100% {
+        transform: translateY(0);
+        opacity: 0.45;
+      }
+      50% {
+        transform: translateY(-4px);
+        opacity: 1;
+      }
+    }
+
+    @keyframes breathe {
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(214, 162, 154, 0.28);
+      }
+      50% {
+        box-shadow: 0 0 0 8px rgba(214, 162, 154, 0.12);
+      }
+    }
+
+    @media (max-width: 900px) {
+      body {
+        overflow: auto;
+      }
+
+      .shell {
+        width: min(100vw - 20px, 680px);
+        height: auto;
+        min-height: calc(100dvh - 20px);
+        margin: 10px auto;
+        grid-template-columns: 1fr;
+      }
+
+      .profile {
+        padding: 20px;
+      }
+
+      .note,
+      .moments {
+        display: none;
+      }
+
+      .chat {
+        min-height: calc(100dvh - 180px);
+      }
+
+      .bubble-wrap {
+        max-width: 86%;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .shell {
+        width: 100vw;
+        min-height: 100dvh;
+        margin: 0;
+        gap: 0;
+      }
+
+      .profile,
+      .chat {
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+      }
+
+      .profile {
+        gap: 14px;
+        border-bottom: 0;
+      }
+
+      .brand {
+        gap: 12px;
+      }
+
+      .avatar {
+        width: 54px;
+        height: 54px;
+        border-radius: 20px;
+        font-size: 22px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .traits {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 2px;
+      }
+
+      .trait {
+        font-size: 13px;
+      }
+
+      .chat {
+        min-height: calc(100dvh - 150px);
+      }
+
+      .chat-head {
+        padding: 15px 16px;
+      }
+
+      .clock {
+        display: none;
+      }
+
+      .messages {
+        padding: 20px 14px;
+      }
+
+      .bubble {
+        font-size: 15px;
+      }
+
+      .composer {
+        padding: 10px;
+      }
+
+      .composer-inner {
+        border-radius: 24px;
+      }
+
+      .icon-button,
+      .send-button {
+        width: 42px;
+        height: 42px;
+        border-radius: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell" aria-label="金多賢聊天頁面">
+    <aside class="profile" aria-label="金多賢簡介">
+      <section class="brand">
+        <div class="avatar" aria-hidden="true">多</div>
+        <div>
+          <h1>金多賢</h1>
+          <p class="status">隨時在這裡</p>
+        </div>
+      </section>
+
+      <p class="note">
+        她很開朗，懂得逗你笑，也會在你累的時候溫柔接住你。她可以陪你聊天、整理心情、解題教學，讓每一次對話都像被認真看見。
+      </p>
+
+      <section class="traits" aria-label="陪伴特質">
+        <span class="trait">開朗陪伴</span>
+        <span class="trait">溫柔安慰</span>
+        <span class="trait">學科教學</span>
+        <span class="trait">生活建議</span>
+      </section>
+
+      <section class="moments" aria-label="常用情境">
+        <div class="moment">
+          <strong>今天想聊什麼</strong>
+          <span>心情、課業、日常、煩惱，都可以慢慢說。</span>
+        </div>
+        <div class="moment">
+          <strong>對話會留下時間</strong>
+          <span>每則訊息會附上日期與 24 小時制時間。</span>
+        </div>
+      </section>
+    </aside>
+
+    <section class="chat" aria-label="聊天">
+      <header class="chat-head">
+        <div class="chat-title">
+          <strong>和金多賢對話</strong>
+          <span id="connectionText">準備好了，想你了就說。</span>
+        </div>
+        <time class="clock" id="clock" aria-live="polite"></time>
+      </header>
+
+      <div class="messages" id="messages" aria-live="polite" aria-label="對話內容"></div>
+
+      <form class="composer" id="chatForm">
+        <div class="composer-inner">
+          <button class="icon-button" id="voiceButton" type="button" aria-label="語音輸入" aria-pressed="false" title="語音輸入">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M12 19v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+          </button>
+
+          <label class="sr-only" for="messageInput">輸入訊息</label>
+          <textarea id="messageInput" rows="1" placeholder="輸入訊息，按 Enter 送出"></textarea>
+
+          <button class="send-button" id="sendButton" type="submit" aria-label="送出訊息">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m22 2-7 20-4-9-9-4 20-7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path>
+              <path d="M22 2 11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxf91Z-zGY2RfsJ4G3zyI7WbaR-MNFwkBdvY1oAnA__MyMRx1kNbfGqJDwKjafULKba/exec";
+    const BOT_NAME = "金多賢";
+    const MODEL = "gpt-5.4-mini";
+    const STORAGE_KEY = "kim-dahyun-chat-history";
+
+    const messagesEl = document.querySelector("#messages");
+    const form = document.querySelector("#chatForm");
+    const input = document.querySelector("#messageInput");
+    const sendButton = document.querySelector("#sendButton");
+    const voiceButton = document.querySelector("#voiceButton");
+    const connectionText = document.querySelector("#connectionText");
+    const clock = document.querySelector("#clock");
+
+    const formatter = new Intl.DateTimeFormat("zh-TW", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    });
+
+    let history = loadHistory();
+    let isSending = false;
+    let recognition = null;
+    let isListening = false;
+
+    function nowText(date = new Date()) {
+      return formatter.format(date).replace(/\//g, "-");
+    }
+
+    function updateClock() {
+      clock.textContent = nowText();
+      clock.setAttribute("datetime", new Date().toISOString());
+    }
+
+    function loadHistory() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(saved) ? saved : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveHistory() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(-80)));
+    }
+
+    function renderMessage(message) {
+      const row = document.createElement("article");
+      row.className = `message-row ${message.role === "user" ? "user" : "assistant"}`;
+
+      if (message.role !== "user") {
+        const avatar = document.createElement("div");
+        avatar.className = "mini-avatar";
+        avatar.textContent = "多";
+        row.appendChild(avatar);
+      }
+
+      const wrap = document.createElement("div");
+      wrap.className = "bubble-wrap";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = message.content;
+
+      const meta = document.createElement("time");
+      meta.className = "meta";
+      meta.dateTime = message.isoTime;
+      meta.textContent = message.timeText;
+
+      wrap.append(bubble, meta);
+      row.appendChild(wrap);
+      messagesEl.appendChild(row);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return row;
+    }
+
+    function renderTyping() {
+      const row = document.createElement("article");
+      row.className = "message-row assistant";
+      row.dataset.typing = "true";
+
+      const avatar = document.createElement("div");
+      avatar.className = "mini-avatar";
+      avatar.textContent = "多";
+
+      const wrap = document.createElement("div");
+      wrap.className = "bubble-wrap";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.innerHTML = '<span class="typing" aria-label="金多賢正在回覆"><span></span><span></span><span></span></span>';
+
+      wrap.appendChild(bubble);
+      row.append(avatar, wrap);
+      messagesEl.appendChild(row);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return row;
+    }
+
+    function addMessage(role, content, date = new Date()) {
+      const message = {
+        role,
+        content,
+        isoTime: date.toISOString(),
+        timeText: nowText(date)
+      };
+      history.push(message);
+      saveHistory();
+      renderMessage(message);
+      return message;
+    }
+
+    function autosize() {
+      input.style.height = "auto";
+      input.style.height = `${Math.min(input.scrollHeight, 150)}px`;
+    }
+
+    function extractReply(data) {
+      if (typeof data === "string") return data;
+      if (!data || typeof data !== "object") return "";
+      return data.reply || data.message || data.text || data.content || data.answer || "";
+    }
+
+    async function requestReply(userMessage) {
+      const payload = {
+        model: MODEL,
+        botName: BOT_NAME,
+        userMessage,
+        timestamp: new Date().toISOString(),
+        timeText: nowText(),
+        spreadsheetId: "11t68e11Y6QVDzoYwjYkk2PZ9PdY-O-uz-Amm6bJODh4",
+        profile: {
+          name: BOT_NAME,
+          personality: "開朗、幽默、溫柔、善於安慰，也擅長教學學科知識。回覆必須是自然純文字，不使用 Markdown。"
+        },
+        history: history.slice(-20).map(({ role, content, isoTime, timeText }) => ({ role, content, isoTime, timeText }))
+      };
+
+      const response = await fetch(GAS_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const raw = await response.text();
+      if (!response.ok) {
+        throw new Error(raw || "服務暫時無法回應");
+      }
+
+      try {
+        const data = JSON.parse(raw);
+        return extractReply(data).trim();
+      } catch {
+        return raw.trim();
+      }
+    }
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text || isSending) return;
+
+      isSending = true;
+      sendButton.disabled = true;
+      input.value = "";
+      autosize();
+
+      addMessage("user", text);
+      const typingRow = renderTyping();
+      connectionText.textContent = "金多賢正在回覆你";
+
+      try {
+        const reply = await requestReply(text);
+        typingRow.remove();
+        addMessage("assistant", reply || "我在這裡。剛剛那句話我想再聽你多說一點，好嗎？");
+        connectionText.textContent = "一直都在，好好說給我聽。";
+      } catch (error) {
+        typingRow.remove();
+        addMessage("assistant", "我現在連線有點不順，但我沒有離開。你可以再送一次，我會接著陪你。");
+        connectionText.textContent = "連線需要再試一次";
+      } finally {
+        isSending = false;
+        sendButton.disabled = false;
+        input.focus();
+      }
+    }
+
+    function setupSpeech() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        voiceButton.disabled = true;
+        voiceButton.title = "目前瀏覽器不支援語音輸入";
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = "zh-TW";
+      recognition.interimResults = true;
+      recognition.continuous = false;
+
+      recognition.addEventListener("start", () => {
+        isListening = true;
+        voiceButton.setAttribute("aria-pressed", "true");
+        connectionText.textContent = "正在聽你說話";
+      });
+
+      recognition.addEventListener("end", () => {
+        isListening = false;
+        voiceButton.setAttribute("aria-pressed", "false");
+        connectionText.textContent = "準備好了，想你了就說。";
+      });
+
+      recognition.addEventListener("result", (event) => {
+        let transcript = "";
+        for (let index = event.resultIndex; index < event.results.length; index += 1) {
+          transcript += event.results[index][0].transcript;
+        }
+        input.value = transcript.trim();
+        autosize();
+      });
+    }
+
+    voiceButton.addEventListener("click", () => {
+      if (!recognition) return;
+      if (isListening) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendMessage();
+    });
+
+    input.addEventListener("input", autosize);
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+    updateClock();
+    setInterval(updateClock, 1000);
+    setupSpeech();
+
+    if (history.length === 0) {
+      addMessage("assistant", "嗨，我是金多賢。今天不管你想撒嬌、想笑一下、想問功課，還是只是想有人聽你說話，我都在。");
+    } else {
+      history.forEach(renderMessage);
+    }
+
+    input.focus();
+  </script>
+</body>
+</html>
