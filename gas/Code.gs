@@ -1,4 +1,4 @@
-const OPENAI_MODEL = 'gpt-5.4-mini';
+const OPENAI_MODEL = 'gpt-5-mini';
 const SPREADSHEET_ID = '11t68e11Y6QVDzoYwjYkk2PZ9PdY-O-uz-Amm6bJODh4';
 const SHEET_NAME = '聊天記錄';
 
@@ -23,13 +23,26 @@ function doPost(e) {
     }
 
     const receivedAt = new Date();
-    const reply = callOpenAI(payload, userMessage);
+    let reply = '';
+    let serviceStatus = 'openai';
+    let serviceDetail = '';
+
+    try {
+      reply = callOpenAI(payload, userMessage);
+    } catch (openAiError) {
+      serviceStatus = 'fallback';
+      serviceDetail = String(openAiError && openAiError.message ? openAiError.message : openAiError);
+      reply = fallbackReply(userMessage);
+    }
+
     const repliedAt = new Date();
 
     appendConversation({
       userMessage,
       reply,
       model: OPENAI_MODEL,
+      serviceStatus,
+      serviceDetail,
       receivedAt,
       repliedAt,
       userTimeText: payload.timeText || formatTaipeiTime(receivedAt)
@@ -39,6 +52,7 @@ function doPost(e) {
       ok: true,
       reply,
       model: OPENAI_MODEL,
+      fallback: serviceStatus === 'fallback',
       timeText: formatTaipeiTime(repliedAt)
     });
   } catch (error) {
@@ -128,6 +142,17 @@ function extractOutputText(data) {
     .join('\n');
 }
 
+function fallbackReply(userMessage) {
+  const text = String(userMessage || '').trim();
+  if (/數學|英文|國文|自然|物理|化學|生物|歷史|地理|公民|考試|作業|題目/.test(text)) {
+    return '我收到你的問題了。這題我會先陪你拆小步：先把題目中已知的條件圈出來，再找它真正問的是什麼。你把題目完整貼給我，我們一步一步解，不急。';
+  }
+  if (/難過|煩|累|哭|壓力|孤單|失望|生氣|焦慮|害怕/.test(text)) {
+    return '我有聽見你現在不太好受。先不要急著把自己整理得很完美，慢慢呼吸一下，把最卡住你的那一件事告訴我就好，我會陪你一起把它放輕一點。';
+  }
+  return '我在這裡，也有收到你剛剛說的話。你可以再多跟我說一點，我會陪你聊、也會幫你把事情想清楚。';
+}
+
 function appendConversation(record) {
   const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = getOrCreateSheet(spreadsheet);
@@ -138,6 +163,8 @@ function appendConversation(record) {
       '使用者訊息',
       '金多賢回覆',
       '模型',
+      '服務狀態',
+      '服務細節',
       '使用者端時間',
       '回覆完成時間'
     ]);
@@ -148,6 +175,8 @@ function appendConversation(record) {
     record.userMessage,
     record.reply,
     record.model,
+    record.serviceStatus || '',
+    record.serviceDetail || '',
     record.userTimeText,
     formatTaipeiTime(record.repliedAt)
   ]);

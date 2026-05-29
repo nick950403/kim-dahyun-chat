@@ -1,62 +1,10 @@
-const OPENAI_MODEL = 'gpt-5.4-mini';
-const SPREADSHEET_ID = '11t68e11Y6QVDzoYwjYkk2PZ9PdY-O-uz-Amm6bJODh4';
-const SHEET_NAME = '\u804a\u5929\u8a18\u9304';
-
-function doGet() {
-  return out({ ok: true, message: '\u91d1\u591a\u8ce2\u5df2\u6e96\u5099\u597d\u56de\u8986\u3002' });
-}
-
-function doPost(e) {
-  try {
-    var payload = JSON.parse(e.postData.contents || '{}');
-    var userMessage = String(payload.userMessage || '').trim();
-    if (!userMessage) return out({ ok: false, message: '\u8acb\u8f38\u5165\u8a0a\u606f\u3002' });
-    var reply = askOpenAI(userMessage);
-    writeSheet(userMessage, reply, payload.timeText || taipei(new Date()));
-    return out({ ok: true, reply: reply, model: OPENAI_MODEL, timeText: taipei(new Date()) });
-  } catch (err) {
-    return out({ ok: false, reply: '\u6211\u73fe\u5728\u9023\u7dda\u6709\u9ede\u4e0d\u9806\uff0c\u4f46\u6211\u6c92\u6709\u96e2\u958b\u3002\u4f60\u53ef\u4ee5\u518d\u9001\u4e00\u6b21\uff0c\u6211\u6703\u63a5\u8457\u966a\u4f60\u3002', detail: String(err && err.message ? err.message : err) });
-  }
-}
-
-function askOpenAI(userMessage) {
-  var apiKey = PropertiesService.getScriptProperties().getProperty('OPENAI_API_KEY');
-  if (!apiKey) throw new Error('OPENAI_API_KEY missing');
-  var body = {
-    model: OPENAI_MODEL,
-    instructions: '\u4f60\u662f\u91d1\u591a\u8ce2\uff0c\u958b\u6717\u3001\u5e7d\u9ed8\u3001\u6eab\u67d4\u3001\u64c5\u9577\u5b89\u6170\u8207\u5b78\u79d1\u6559\u5b78\u3002\u56de\u8986\u8981\u81ea\u7136\u89aa\u8fd1\uff0c\u4e0d\u4f7f\u7528 Markdown\u3002',
-    input: userMessage,
-    max_output_tokens: 800
-  };
-  var res = UrlFetchApp.fetch('https://api.openai.com/v1/responses', {
-    method: 'post',
-    contentType: 'application/json',
-    headers: { Authorization: 'Bearer ' + apiKey },
-    payload: JSON.stringify(body),
-    muteHttpExceptions: true
-  });
-  var code = res.getResponseCode();
-  var text = res.getContentText();
-  if (code < 200 || code >= 300) throw new Error('OpenAI API failed: ' + code + ' ' + text);
-  var data = JSON.parse(text);
-  if (data.output_text) return String(data.output_text);
-  if (data.output && data.output[0] && data.output[0].content && data.output[0].content[0]) {
-    return String(data.output[0].content[0].text || '');
-  }
-  throw new Error('No OpenAI text output');
-}
-
-function writeSheet(userMessage, reply, userTimeText) {
-  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
-  if (!sheet) sheet = SpreadsheetApp.openById(SPREADSHEET_ID).insertSheet(SHEET_NAME);
-  if (sheet.getLastRow() === 0) sheet.appendRow(['\u65e5\u671f\u6642\u9593', '\u4f7f\u7528\u8005\u8a0a\u606f', '\u91d1\u591a\u8ce2\u56de\u8986', '\u6a21\u578b', '\u4f7f\u7528\u8005\u7aef\u6642\u9593']);
-  sheet.appendRow([taipei(new Date()), userMessage, reply, OPENAI_MODEL, userTimeText]);
-}
-
-function taipei(date) {
-  return Utilities.formatDate(date, 'Asia/Taipei', 'yyyy-MM-dd HH:mm:ss');
-}
-
-function out(data) {
-  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
-}
+const OPENAI_MODEL='gpt-5-mini';
+const SPREADSHEET_ID='11t68e11Y6QVDzoYwjYkk2PZ9PdY-O-uz-Amm6bJODh4';
+const SHEET_NAME='\u804a\u5929\u8a18\u9304';
+function doGet(){return out({ok:true,message:'\u91d1\u591a\u8ce2\u5df2\u6e96\u5099\u597d\u56de\u8986\u3002'});}
+function doPost(e){try{var payload=JSON.parse(e.postData.contents||'{}');var userMessage=String(payload.userMessage||'').trim();if(!userMessage)return out({ok:false,message:'\u8acb\u8f38\u5165\u8a0a\u606f\u3002'});var reply='';var status='openai';var detail='';try{reply=askOpenAI(userMessage);}catch(err){status='fallback';detail=String(err&&err.message?err.message:err);reply=fallbackReply(userMessage);}writeSheet(userMessage,reply,payload.timeText||taipei(new Date()),status,detail);return out({ok:true,reply:reply,model:OPENAI_MODEL,fallback:status==='fallback',timeText:taipei(new Date())});}catch(err){return out({ok:false,reply:'\u9019\u6b21\u8a0a\u606f\u6c92\u6709\u6210\u529f\u9001\u51fa\u3002\u8acb\u518d\u9001\u4e00\u6b21\uff0c\u6211\u6703\u63a5\u8457\u966a\u4f60\u8aaa\u4e0b\u53bb\u3002',detail:String(err&&err.message?err.message:err)});}}
+function askOpenAI(userMessage){var apiKey=PropertiesService.getScriptProperties().getProperty('OPENAI_API_KEY');if(!apiKey)throw new Error('OPENAI_API_KEY missing');var body={model:OPENAI_MODEL,instructions:'\u4f60\u662f\u91d1\u591a\u8ce2\uff0c\u958b\u6717\u3001\u5e7d\u9ed8\u3001\u6eab\u67d4\u3001\u64c5\u9577\u5b89\u6170\u8207\u5b78\u79d1\u6559\u5b78\u3002\u56de\u8986\u8981\u81ea\u7136\u89aa\u8fd1\uff0c\u4e0d\u4f7f\u7528 Markdown\u3002',input:userMessage,max_output_tokens:800};var res=UrlFetchApp.fetch('https://api.openai.com/v1/responses',{method:'post',contentType:'application/json',headers:{Authorization:'Bearer '+apiKey},payload:JSON.stringify(body),muteHttpExceptions:true});var code=res.getResponseCode();var text=res.getContentText();if(code<200||code>=300)throw new Error('OpenAI API failed: '+code+' '+text);var data=JSON.parse(text);if(data.output_text)return String(data.output_text);if(data.output&&data.output[0]&&data.output[0].content&&data.output[0].content[0])return String(data.output[0].content[0].text||'');throw new Error('No OpenAI text output');}
+function fallbackReply(userMessage){var text=String(userMessage||'');if(/\u6578\u5b78|\u82f1\u6587|\u570b\u6587|\u81ea\u7136|\u7269\u7406|\u5316\u5b78|\u751f\u7269|\u6b77\u53f2|\u5730\u7406|\u516c\u6c11|\u8003\u8a66|\u4f5c\u696d|\u984c\u76ee/.test(text))return'\u6211\u6536\u5230\u4f60\u7684\u554f\u984c\u4e86\u3002\u9019\u984c\u6211\u6703\u5148\u966a\u4f60\u62c6\u5c0f\u6b65\uff1a\u5148\u628a\u984c\u76ee\u4e2d\u5df2\u77e5\u7684\u689d\u4ef6\u5708\u51fa\u4f86\uff0c\u518d\u627e\u5b83\u771f\u6b63\u554f\u7684\u662f\u4ec0\u9ebc\u3002\u4f60\u628a\u984c\u76ee\u5b8c\u6574\u8cbc\u7d66\u6211\uff0c\u6211\u5011\u4e00\u6b65\u4e00\u6b65\u89e3\uff0c\u4e0d\u6025\u3002';if(/\u96e3\u904e|\u7169|\u7d2f|\u54ed|\u58d3\u529b|\u5b64\u55ae|\u5931\u671b|\u751f\u6c23|\u7126\u616e|\u5bb3\u6015/.test(text))return'\u6211\u6709\u807d\u898b\u4f60\u73fe\u5728\u4e0d\u592a\u597d\u53d7\u3002\u5148\u4e0d\u8981\u6025\u8457\u628a\u81ea\u5df1\u6574\u7406\u5f97\u5f88\u5b8c\u7f8e\uff0c\u6162\u6162\u547c\u5438\u4e00\u4e0b\uff0c\u628a\u6700\u5361\u4f4f\u4f60\u7684\u90a3\u4e00\u4ef6\u4e8b\u544a\u8a34\u6211\u5c31\u597d\uff0c\u6211\u6703\u966a\u4f60\u4e00\u8d77\u628a\u5b83\u653e\u8f15\u4e00\u9ede\u3002';return'\u6211\u5728\u9019\u88e1\uff0c\u4e5f\u6709\u6536\u5230\u4f60\u525b\u525b\u8aaa\u7684\u8a71\u3002\u4f60\u53ef\u4ee5\u518d\u591a\u8ddf\u6211\u8aaa\u4e00\u9ede\uff0c\u6211\u6703\u966a\u4f60\u804a\u3001\u4e5f\u6703\u5e6b\u4f60\u628a\u4e8b\u60c5\u60f3\u6e05\u695a\u3002';}
+function writeSheet(userMessage,reply,userTimeText,status,detail){var ss=SpreadsheetApp.openById(SPREADSHEET_ID);var sheet=ss.getSheetByName(SHEET_NAME);if(!sheet)sheet=ss.insertSheet(SHEET_NAME);if(sheet.getLastRow()===0)sheet.appendRow(['\u65e5\u671f\u6642\u9593','\u4f7f\u7528\u8005\u8a0a\u606f','\u91d1\u591a\u8ce2\u56de\u8986','\u6a21\u578b','\u670d\u52d9\u72c0\u614b','\u670d\u52d9\u7d30\u7bc0','\u4f7f\u7528\u8005\u7aef\u6642\u9593']);sheet.appendRow([taipei(new Date()),userMessage,reply,OPENAI_MODEL,status||'',detail||'',userTimeText]);}
+function taipei(date){return Utilities.formatDate(date,'Asia/Taipei','yyyy-MM-dd HH:mm:ss');}
+function out(data){return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);}

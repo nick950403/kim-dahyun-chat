@@ -617,7 +617,7 @@
   <script>
     const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxf91Z-zGY2RfsJ4G3zyI7WbaR-MNFwkBdvY1oAnA__MyMRx1kNbfGqJDwKjafULKba/exec";
     const BOT_NAME = "金多賢";
-    const MODEL = "gpt-5.4-mini";
+    const MODEL = "gpt-5-mini";
     const STORAGE_KEY = "kim-dahyun-chat-history";
 
     const messagesEl = document.querySelector("#messages");
@@ -770,12 +770,17 @@
         throw new Error(raw || "服務暫時無法回應");
       }
 
+      let data = null;
       try {
-        const data = JSON.parse(raw);
-        return extractReply(data).trim();
+        data = JSON.parse(raw);
       } catch {
         return raw.trim();
       }
+
+      if (data && data.ok === false) {
+        throw new Error(data.detail || data.message || "服務暫時無法回應");
+      }
+      return extractReply(data).trim();
     }
 
     async function sendMessage() {
@@ -798,8 +803,8 @@
         connectionText.textContent = "一直都在，好好說給我聽。";
       } catch (error) {
         typingRow.remove();
-        addMessage("assistant", "我現在連線有點不順，但我沒有離開。你可以再送一次，我會接著陪你。");
-        connectionText.textContent = "連線需要再試一次";
+        addMessage("assistant", "這次訊息沒有成功送出。請再送一次，我會接著陪你說下去。");
+        connectionText.textContent = "請再送一次";
       } finally {
         isSending = false;
         sendButton.disabled = false;
