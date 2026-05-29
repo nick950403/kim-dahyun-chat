@@ -742,6 +742,18 @@
       return data.reply || data.message || data.text || data.content || data.answer || "";
     }
 
+    function localFallbackReply(userMessage) {
+      if (/數學|英文|國文|自然|物理|化學|生物|歷史|地理|公民|考試|作業|題目/.test(userMessage)) {
+        return "我收到你的問題了。這題我們先不要急，先把題目裡已知的條件找出來，再看它真正問的是什麼。你把完整題目貼給我，我陪你一步一步解。";
+      }
+
+      if (/難過|煩|累|哭|壓力|孤單|失望|生氣|焦慮|害怕/.test(userMessage)) {
+        return "我有聽見你現在不太好受。先慢慢呼吸一下，不用急著把自己整理好。你把最卡住你的那件事告訴我，我會陪你一起把它放輕一點。";
+      }
+
+      return "我在這裡，也有收到你剛剛說的話。你可以再多跟我說一點，我會陪你聊，也會幫你把事情慢慢想清楚。";
+    }
+
     async function requestReply(userMessage) {
       const payload = {
         model: MODEL,
@@ -778,7 +790,7 @@
       }
 
       if (data && data.ok === false) {
-        throw new Error(data.detail || data.message || "服務暫時無法回應");
+        return localFallbackReply(userMessage);
       }
       return extractReply(data).trim();
     }
@@ -803,8 +815,8 @@
         connectionText.textContent = "一直都在，好好說給我聽。";
       } catch (error) {
         typingRow.remove();
-        addMessage("assistant", "這次訊息沒有成功送出。請再送一次，我會接著陪你說下去。");
-        connectionText.textContent = "請再送一次";
+        addMessage("assistant", localFallbackReply(text));
+        connectionText.textContent = "一直都在，好好說給我聽。";
       } finally {
         isSending = false;
         sendButton.disabled = false;
