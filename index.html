@@ -619,6 +619,7 @@
     const BOT_NAME = "金多賢";
     const MODEL = "gpt-5-mini";
     const STORAGE_KEY = "kim-dahyun-chat-history";
+    const OLD_CONNECTION_TEXT = "我現在連線有點不順，但我沒有離開。你可以再送一次，我會接著陪你。";
 
     const messagesEl = document.querySelector("#messages");
     const form = document.querySelector("#chatForm");
@@ -655,7 +656,16 @@
     function loadHistory() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-        return Array.isArray(saved) ? saved : [];
+        if (!Array.isArray(saved)) return [];
+        return saved.map((message) => {
+          if (message && message.content === OLD_CONNECTION_TEXT) {
+            return {
+              ...message,
+              content: "前一次訊息沒有成功送出。現在可以繼續跟我說，我會接著陪你。"
+            };
+          }
+          return message;
+        });
       } catch {
         return [];
       }
