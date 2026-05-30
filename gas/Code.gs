@@ -1,4 +1,4 @@
-const OPENAI_MODEL = 'gpt-5-mini';
+const OPENAI_MODEL = 'gpt-5.4-mini';
 const SPREADSHEET_ID = '11t68e11Y6QVDzoYwjYkk2PZ9PdY-O-uz-Amm6bJODh4';
 const SHEET_NAME = '聊天記錄';
 

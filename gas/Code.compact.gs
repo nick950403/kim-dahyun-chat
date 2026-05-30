@@ -1,4 +1,4 @@
-const OPENAI_MODEL='gpt-5-mini';
+const OPENAI_MODEL='gpt-5.4-mini';
 const SPREADSHEET_ID='11t68e11Y6QVDzoYwjYkk2PZ9PdY-O-uz-Amm6bJODh4';
 const SHEET_NAME='\u804a\u5929\u8a18\u9304';
 function doGet(){return out({ok:true,message:'\u91d1\u591a\u8ce2\u5df2\u6e96\u5099\u597d\u56de\u8986\u3002'});}
